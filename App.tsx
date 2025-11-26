@@ -22,7 +22,8 @@ import {
   AlertCircle,
   XCircle,
   Package,
-  X
+  X,
+  ArrowDownCircle
 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -285,6 +286,17 @@ const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: ()
 const OrdersTable = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  // Generate extended list for scrolling demonstration
+  // We duplicate the mock data 8 times to create a long enough list to scroll
+  const extendedOrders = React.useMemo(() => {
+    return Array(8).fill(ORDERS).flat().map((order, index) => ({
+      ...order,
+      id: index + 1000, // Ensure unique IDs for rendering
+      // Add slight variety to order code so they look distinct
+      orderCode: `${order.orderCode}-${index}`
+    }));
+  }, []);
+
   const handleConfirmOrder = (note: string) => {
     if (selectedOrder) {
       // In a real app, this would be an API call
@@ -294,8 +306,8 @@ const OrdersTable = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
-        <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-white">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full">
+        <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-lg shrink-0">
             <div className="flex items-center">
                 <h2 className="text-base font-bold text-gray-800 flex items-center mr-3">
                     <Truck className="mr-2 text-teal-600" size={18}/>
@@ -314,61 +326,59 @@ const OrdersTable = () => {
             </div>
         </div>
         
-        <div className="overflow-x-auto custom-scrollbar flex-1">
-        <table className="w-full text-xs text-left">
-            <thead className="bg-gray-50 text-gray-700 font-semibold uppercase sticky top-0 z-10 text-[11px]">
-            <tr>
-                <th className="px-3 py-2.5 border-b border-gray-200 w-10 text-center">STT</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">Mã đơn hàng</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">Số container</th>
-                <th className="px-3 py-2.5 border-b border-gray-200 w-16 text-center">Kích cỡ</th>
-                <th className="px-3 py-2.5 border-b border-gray-200 w-16 text-center">Trọng lượng</th>
-                <th className="px-3 py-2.5 border-b border-gray-200 text-right">Số tiền</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">Tên chủ hàng</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">ĐT chủ hàng</th>
-                <th className="px-3 py-2.5 border-b border-gray-200 w-24">Ngày lấy hàng</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">Điểm đi</th>
-                <th className="px-3 py-2.5 border-b border-gray-200">Điểm đến</th>
-                <th className="px-3 py-2.5 border-b border-gray-200 text-center sticky right-0 bg-gray-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)]">Nhận đơn</th>
-            </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-            {ORDERS.map((order, index) => (
-                <tr key={order.id} className="hover:bg-teal-50/30 transition-colors group">
-                <td className="px-3 py-2 text-center text-gray-500">{order.id}</td>
-                <td className="px-3 py-2 font-medium text-gray-700">{order.orderCode}</td>
-                <td className="px-3 py-2 text-gray-600">{order.containerNo}</td>
-                <td className="px-3 py-2 text-center text-gray-600">{order.size}</td>
-                <td className="px-3 py-2 text-center text-gray-600">{order.weight}</td>
-                <td className="px-3 py-2 text-right font-medium text-teal-600">{order.amount}</td>
-                <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.owner}>{order.owner}</td>
-                <td className="px-3 py-2 text-gray-600">{order.phone}</td>
-                <td className="px-3 py-2 text-gray-600">{order.date}</td>
-                <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.departure}>{order.departure}</td>
-                <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.destination}>{order.destination}</td>
-                <td className="px-3 py-2 text-center sticky right-0 bg-white group-hover:bg-teal-50/30 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)]">
-                    <button 
-                        onClick={() => setSelectedOrder(order)}
-                        className="bg-teal-500 hover:bg-teal-600 text-white text-[9px] uppercase font-bold px-2 py-1 rounded shadow-sm transition-all transform active:scale-95"
-                    >
-                    Nhận
-                    </button>
-                </td>
+        {/* Scrollable Container with Fixed Height - Reduced to h-[400px] (~10 rows) */}
+        <div className="overflow-y-auto custom-scrollbar h-[400px] relative">
+            <table className="w-full text-xs text-left border-collapse">
+                <thead className="bg-gray-50 text-gray-700 font-semibold uppercase sticky top-0 z-20 text-[11px] shadow-sm ring-1 ring-gray-200 ring-opacity-50">
+                <tr>
+                    <th className="px-3 py-2.5 border-b border-gray-200 w-10 text-center bg-gray-50">STT</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Mã đơn hàng</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Số container</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 w-16 text-center bg-gray-50">Kích cỡ</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 w-16 text-center bg-gray-50">Trọng lượng</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 text-right bg-gray-50">Số tiền</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Tên chủ hàng</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">ĐT chủ hàng</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 w-24 bg-gray-50">Ngày lấy hàng</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Điểm đi</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Điểm đến</th>
+                    <th className="px-3 py-2.5 border-b border-gray-200 text-center sticky right-0 bg-gray-50 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] z-30">Nhận đơn</th>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100 bg-white">
+                {extendedOrders.map((order, index) => (
+                    <tr key={order.id} className="hover:bg-teal-50/30 transition-colors group">
+                    <td className="px-3 py-2 text-center text-gray-500">{index + 1}</td>
+                    <td className="px-3 py-2 font-medium text-gray-700">{order.orderCode}</td>
+                    <td className="px-3 py-2 text-gray-600">{order.containerNo}</td>
+                    <td className="px-3 py-2 text-center text-gray-600">{order.size}</td>
+                    <td className="px-3 py-2 text-center text-gray-600">{order.weight}</td>
+                    <td className="px-3 py-2 text-right font-medium text-teal-600">{order.amount}</td>
+                    <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.owner}>{order.owner}</td>
+                    <td className="px-3 py-2 text-gray-600">{order.phone}</td>
+                    <td className="px-3 py-2 text-gray-600">{order.date}</td>
+                    <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.departure}>{order.departure}</td>
+                    <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.destination}>{order.destination}</td>
+                    <td className="px-3 py-2 text-center sticky right-0 bg-white group-hover:bg-teal-50/30 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)]">
+                        <button 
+                            onClick={() => setSelectedOrder(order)}
+                            className="bg-teal-500 hover:bg-teal-600 text-white text-[9px] uppercase font-bold px-2 py-1 rounded shadow-sm transition-all transform active:scale-95"
+                        >
+                        Nhận
+                        </button>
+                    </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
         </div>
         
-        <div className="bg-gray-50 p-2 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
-            <span>Số dòng: 65 / 65 dòng</span>
-            <div className="flex gap-1">
-                <button className="px-2 py-1 border rounded bg-white hover:bg-gray-100">Trước</button>
-                <button className="px-2 py-1 border rounded bg-teal-500 text-white font-bold">1</button>
-                <button className="px-2 py-1 border rounded bg-white hover:bg-gray-100">2</button>
-                <button className="px-2 py-1 border rounded bg-white hover:bg-gray-100">3</button>
-                <button className="px-2 py-1 border rounded bg-white hover:bg-gray-100">Sau</button>
-            </div>
+        <div className="bg-gray-50 p-2 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500 rounded-b-lg shrink-0">
+            <span className="font-semibold text-teal-700 ml-1">Tổng số: {extendedOrders.length} đơn hàng</span>
+            <span className="text-gray-400 italic flex items-center gap-1 mr-1">
+                <ArrowDownCircle size={14} className="text-gray-300" />
+                Cuộn để xem thêm
+            </span>
         </div>
 
         {/* Modal */}
