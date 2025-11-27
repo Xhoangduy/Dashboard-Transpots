@@ -338,7 +338,6 @@ const OrdersTable = () => {
                     <th className="px-3 py-2.5 border-b border-gray-200 w-16 text-center bg-gray-50">Trọng lượng</th>
                     <th className="px-3 py-2.5 border-b border-gray-200 text-right bg-gray-50">Số tiền</th>
                     <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Tên chủ hàng</th>
-                    <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">ĐT chủ hàng</th>
                     <th className="px-3 py-2.5 border-b border-gray-200 w-24 bg-gray-50">Ngày lấy hàng</th>
                     <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Điểm đi</th>
                     <th className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">Điểm đến</th>
@@ -355,7 +354,6 @@ const OrdersTable = () => {
                     <td className="px-3 py-2 text-center text-gray-600">{order.weight}</td>
                     <td className="px-3 py-2 text-right font-medium text-teal-600">{order.amount}</td>
                     <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.owner}>{order.owner}</td>
-                    <td className="px-3 py-2 text-gray-600">{order.phone}</td>
                     <td className="px-3 py-2 text-gray-600">{order.date}</td>
                     <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.departure}>{order.departure}</td>
                     <td className="px-3 py-2 text-gray-600 truncate max-w-[150px]" title={order.destination}>{order.destination}</td>
