@@ -41,6 +41,7 @@ interface Order {
   departure: string;
   destination: string;
   status: 'new' | 'processing' | 'done';
+  note?: string; // Added note field
 }
 
 interface MonthlyRevenue {
@@ -52,11 +53,11 @@ interface MonthlyRevenue {
 
 // --- Mock Data ---
 const ORDERS: Order[] = [
-  { id: 13, orderCode: 'SLT25110114633', containerNo: 'CMAU3779435', size: '22G0', weight: 20, amount: '218,160', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-01', departure: 'Cảng Cát Lái', destination: 'Cảng Container QT SP-ITC', status: 'new' },
-  { id: 14, orderCode: 'SLT25110493944', containerNo: 'GMLU6234978', size: '22G0', weight: 20, amount: '395,280', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Tân Thuận', destination: 'Cảng Container QT SP-ITC', status: 'new' },
-  { id: 15, orderCode: 'SLT25110447277', containerNo: 'MSCU3849324', size: '22G0', weight: 20, amount: '490,320', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Tổng Hợp Bình Dương', destination: 'Cảng Container QT SP-ITC', status: 'new' },
+  { id: 13, orderCode: 'SLT25110114633', containerNo: 'CMAU3779435', size: '22G0', weight: 20, amount: '218,160', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-01', departure: 'Cảng Cát Lái', destination: 'Cảng Container QT SP-ITC', status: 'new', note: 'Giao hàng trong giờ hành chính' },
+  { id: 14, orderCode: 'SLT25110493944', containerNo: 'GMLU6234978', size: '22G0', weight: 20, amount: '395,280', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Tân Thuận', destination: 'Cảng Container QT SP-ITC', status: 'new', note: 'Hàng dễ vỡ, xin nhẹ tay' },
+  { id: 15, orderCode: 'SLT25110447277', containerNo: 'MSCU3849324', size: '22G0', weight: 20, amount: '490,320', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Tổng Hợp Bình Dương', destination: 'Cảng Container QT SP-ITC', status: 'new', note: 'Gọi trước khi đến 30 phút' },
   { id: 16, orderCode: 'SLT25110463664', containerNo: 'GMLU7282762', size: '22G0', weight: 24, amount: '218,160', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Cát Lái', destination: 'Cảng Container QT SP-ITC', status: 'new' },
-  { id: 17, orderCode: 'SLT25110497675', containerNo: 'EMCU6238579', size: '22G0', weight: 23, amount: '419,040', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Đồng Nai', destination: 'Cảng Container QT SP-ITC', status: 'new' },
+  { id: 17, orderCode: 'SLT25110497675', containerNo: 'EMCU6238579', size: '22G0', weight: 23, amount: '419,040', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Đồng Nai', destination: 'Cảng Container QT SP-ITC', status: 'new', note: 'Yêu cầu xe có sàn gỗ' },
   { id: 18, orderCode: 'SLT25110456055', containerNo: 'EMCU7348697', size: '22G0', weight: 20, amount: '17,331,840', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Quốc tế Gemadept', destination: 'Cảng Container QT SP-ITC', status: 'new' },
   { id: 19, orderCode: 'SLT25110453817', containerNo: 'CMAU3724289', size: '22G0', weight: 20, amount: '12,839,040', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Quy Nhơn', destination: 'Cảng Container QT SP-ITC', status: 'new' },
   { id: 20, orderCode: 'SLT25110417325', containerNo: 'NEGU0884627', size: '22G0', weight: 20, amount: '419,040', owner: 'CÔNG TY TNHH DV TM TÍN PHÁT', phone: '0918274654', date: '2025-11-04', departure: 'Cảng Sài Gòn', destination: 'Cảng Container QT SP-ITC', status: 'new' },
@@ -184,9 +185,7 @@ const DashboardStatsBar = () => (
   </div>
 );
 
-const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: () => void, onConfirm: (note: string) => void }) => {
-  const [note, setNote] = useState('');
-
+const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: () => void, onConfirm: () => void }) => {
   if (!order) return null;
 
   return (
@@ -249,16 +248,19 @@ const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: ()
              </div>
           </div>
 
-          {/* Note Input */}
+          {/* Note - Read Only */}
           <div>
-             <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Ghi chú (Tùy chọn)</label>
-             <textarea 
-                className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-shadow resize-none bg-white"
-                rows={3}
-                placeholder="Nhập ghi chú cho đơn hàng này..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-             />
+             <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Ghi chú</label>
+             <div className={`w-full border rounded-lg p-3 text-sm transition-shadow ${order.note ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-gray-100 border-gray-200 text-gray-400 italic'}`}>
+                {order.note ? (
+                  <div className="flex items-start gap-2">
+                    <FileText size={14} className="mt-0.5 shrink-0 opacity-70" />
+                    <span>{order.note}</span>
+                  </div>
+                ) : (
+                  "Không có ghi chú nào cho đơn hàng này."
+                )}
+             </div>
           </div>
         </div>
 
@@ -271,7 +273,7 @@ const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: ()
              Hủy bỏ
            </button>
            <button 
-             onClick={() => onConfirm(note)}
+             onClick={onConfirm}
              className="px-5 py-2.5 text-sm font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 shadow-md hover:shadow-lg transition-all transform active:scale-[0.98] flex items-center gap-2 focus:ring-2 focus:ring-teal-500 focus:ring-offset-1"
            >
              <CheckCircle size={16} />
@@ -297,10 +299,10 @@ const OrdersTable = () => {
     }));
   }, []);
 
-  const handleConfirmOrder = (note: string) => {
+  const handleConfirmOrder = () => {
     if (selectedOrder) {
       // In a real app, this would be an API call
-      alert(`Đã nhận đơn hàng ${selectedOrder.orderCode} thành công!\nGhi chú: ${note}`);
+      alert(`Đã nhận đơn hàng ${selectedOrder.orderCode} thành công!`);
       setSelectedOrder(null);
     }
   };
