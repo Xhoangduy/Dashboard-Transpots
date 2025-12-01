@@ -72,10 +72,10 @@ const REVENUE_DATA: MonthlyRevenue[] = [
 ];
 
 const PIE_DATA = [
-  { name: 'Thành công', value: 23, color: '#4ade80' }, // green-400
-  { name: 'Đang vận chuyển', value: 0, color: '#3b82f6' }, // blue-500
-  { name: 'Chờ vận chuyển', value: 5, color: '#fbbf24' }, // amber-400
-  { name: 'Đã hủy', value: 3, color: '#ef4444' }, // red-500
+  { name: 'Thành công', value: 23, color: '#44b755' }, // Green
+  { name: 'Đang vận chuyển', value: 2, color: '#2691fc' }, // Blue
+  { name: 'Chờ vận chuyển', value: 5, color: '#f79400' }, // Orange
+  { name: 'Đã hủy', value: 3, color: '#ee473d' }, // Red
 ];
 
 const TOTAL_STATS = [
@@ -417,26 +417,39 @@ const OrdersTable = () => {
 };
 
 const RevenueChart = () => (
-  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col h-full">
-    <div className="flex justify-between items-center mb-4">
-        <h3 className="font-bold text-gray-800 text-base">Tình trạng đơn hàng</h3>
-        <span className="text-xs font-semibold text-gray-500 italic">Tổng: 31 đơn</span>
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col h-full">
+    <div className="flex justify-between items-center mb-6">
+        <h3 className="font-bold text-gray-800 text-lg">Tình trạng đơn hàng (tỉ lệ)</h3>
+        <span className="text-sm font-bold text-gray-800 italic">Tổng: 33 đơn</span>
     </div>
-    <div className="flex flex-col md:flex-row items-center justify-center flex-1">
-        <div className="w-full md:w-1/2 h-48 relative">
+    <div className="flex flex-row items-center justify-center h-full">
+        {/* Chart */}
+        <div className="w-[180px] h-[180px] relative">
             <ResponsiveContainer width="100%" height="100%">
             <PieChart>
                 <Pie
-                data={PIE_DATA}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={70}
-                paddingAngle={2}
-                dataKey="value"
+                    data={PIE_DATA}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={0}
+                    outerRadius={80}
+                    dataKey="value"
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                        const RADIAN = Math.PI / 180;
+                        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                    
+                        return (
+                            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-[10px] font-bold">
+                            {`${(percent * 100).toFixed(0)}%`}
+                            </text>
+                        );
+                    }}
+                    labelLine={false}
                 >
                 {PIE_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="white" strokeWidth={2} />
                 ))}
                 </Pie>
                 <Tooltip 
@@ -445,18 +458,15 @@ const RevenueChart = () => (
                 />
             </PieChart>
             </ResponsiveContainer>
-            {/* Center Label */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                <span className="text-xl font-bold text-gray-700">74%</span>
-                <span className="block text-[9px] text-gray-400 uppercase">Thành công</span>
-            </div>
         </div>
-        <div className="w-full md:w-1/2 flex flex-col justify-center space-y-2 pl-0 md:pl-4 mt-2 md:mt-0">
+        
+        {/* Legend */}
+        <div className="flex flex-col space-y-3 ml-8">
             {PIE_DATA.map((entry, index) => (
-                <div key={index} className="flex items-center text-xs">
-                    <div className="w-2.5 h-2.5 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
-                    <span className="text-gray-600 flex-1">{entry.name}:</span>
-                    <span className="font-bold text-gray-800">{entry.value}</span>
+                <div key={index} className="flex items-center text-sm">
+                    <div className="w-3 h-3 rounded-full mr-3 shadow-sm" style={{ backgroundColor: entry.color }}></div>
+                    <span className="text-gray-600 mr-1 min-w-[100px]">{entry.name}:</span>
+                    <span className="font-bold text-gray-900">{entry.value}</span>
                 </div>
             ))}
         </div>
@@ -465,35 +475,35 @@ const RevenueChart = () => (
 );
 
 const RevenueTable = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full">
-        <div className="p-3 border-b border-gray-100">
-            <h3 className="font-bold text-gray-800 text-base">Doanh thu theo tháng</h3>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full p-6">
+        <div className="mb-6">
+            <h3 className="font-bold text-gray-800 text-lg">Tổng doanh thu theo tháng</h3>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-hidden rounded-t-lg border border-gray-200 flex-grow">
             <table className="w-full text-sm text-left">
-                <thead className="bg-cyan-600 text-white uppercase text-xs">
+                <thead className="bg-[#00796b] text-white font-semibold">
                     <tr>
-                        <th className="px-3 py-2 font-medium text-center">STT</th>
-                        <th className="px-3 py-2 font-medium">Tác nghiệp</th>
-                        <th className="px-3 py-2 font-medium text-center">Tổng</th>
-                        <th className="px-3 py-2 font-medium text-right">Doanh thu</th>
+                        <th className="px-4 py-3 text-center border-r border-teal-600/30">STT</th>
+                        <th className="px-4 py-3 text-center border-r border-teal-600/30">Tác nghiệp</th>
+                        <th className="px-4 py-3 text-center border-r border-teal-600/30">Tổng đơn</th>
+                        <th className="px-4 py-3 text-center">Doanh thu</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 text-xs">
+                <tbody className="divide-y divide-gray-100 text-gray-700">
                     {REVENUE_DATA.map((row) => (
                         <tr key={row.id} className="hover:bg-gray-50">
-                            <td className="px-3 py-2.5 text-center text-gray-500">{row.id}</td>
-                            <td className="px-3 py-2.5 font-medium text-gray-700">{row.profession}</td>
-                            <td className="px-3 py-2.5 text-center text-gray-600">{row.totalOrders}</td>
-                            <td className="px-3 py-2.5 text-right font-bold text-teal-600">{row.revenue}</td>
+                            <td className="px-4 py-3.5 text-center text-gray-500 border-r border-gray-100">{row.id}</td>
+                            <td className="px-4 py-3.5 text-center font-bold text-gray-800 border-r border-gray-100 uppercase">{row.profession}</td>
+                            <td className="px-4 py-3.5 text-center text-gray-600 border-r border-gray-100">{row.totalOrders}</td>
+                            <td className="px-4 py-3.5 text-center font-bold text-gray-900">{row.revenue}</td>
                         </tr>
                     ))}
                     {[...Array(2)].map((_, i) => (
                          <tr key={`empty-${i}`} className="hover:bg-gray-50">
-                             <td className="px-3 py-2.5 text-center text-gray-300">-</td>
-                             <td className="px-3 py-2.5"></td>
-                             <td className="px-3 py-2.5"></td>
-                             <td className="px-3 py-2.5"></td>
+                             <td className="px-4 py-3.5 text-center text-gray-200 border-r border-gray-100">{REVENUE_DATA.length + i + 1}</td>
+                             <td className="px-4 py-3.5 border-r border-gray-100"></td>
+                             <td className="px-4 py-3.5 border-r border-gray-100"></td>
+                             <td className="px-4 py-3.5"></td>
                          </tr>
                     ))}
                 </tbody>
@@ -608,9 +618,9 @@ export default function App() {
         </div>
 
         {/* BOTTOM SECTION: Revenue & Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <RevenueTable />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-auto lg:h-[320px]">
             <RevenueChart />
+            <RevenueTable />
         </div>
 
       </main>
