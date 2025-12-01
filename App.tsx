@@ -23,7 +23,9 @@ import {
   XCircle,
   Package,
   X,
-  ArrowDownCircle
+  ArrowDownCircle,
+  Filter,
+  Calendar
 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -247,21 +249,6 @@ const PaymentModal = ({ order, onClose, onConfirm }: { order: Order, onClose: ()
                 <span className="font-bold text-gray-800 text-sm">{order.date}</span>
              </div>
           </div>
-
-          {/* Note - Read Only */}
-          <div>
-             <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Ghi chú</label>
-             <div className={`w-full border rounded-lg p-3 text-sm transition-shadow ${order.note ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-gray-100 border-gray-200 text-gray-400 italic'}`}>
-                {order.note ? (
-                  <div className="flex items-start gap-2">
-                    <FileText size={14} className="mt-0.5 shrink-0 opacity-70" />
-                    <span>{order.note}</span>
-                  </div>
-                ) : (
-                  "Không có ghi chú nào cho đơn hàng này."
-                )}
-             </div>
-          </div>
         </div>
 
         {/* Footer */}
@@ -328,6 +315,42 @@ const OrdersTable = () => {
             </div>
         </div>
         
+        {/* Search and Filter Bar */}
+        <div className="px-4 py-3 bg-gray-50/50 border-b border-gray-100 flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400" />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Tìm kiếm mã đơn, container, địa điểm, ngày..." 
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out shadow-sm"
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Filter size={16} className="text-gray-400" />
+              </div>
+              <select className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm shadow-sm appearance-none cursor-pointer hover:bg-gray-50">
+                <option>Tất cả trạng thái</option>
+                <option>Mới</option>
+                <option>Đang xử lý</option>
+                <option>Hoàn thành</option>
+              </select>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Calendar size={16} className="text-gray-400" />
+              </div>
+              <input 
+                type="date" 
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm shadow-sm"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Scrollable Container with Fixed Height - Reduced to h-[400px] (~10 rows) */}
         <div className="overflow-y-auto custom-scrollbar h-[400px] relative">
             <table className="w-full text-xs text-left border-collapse">
